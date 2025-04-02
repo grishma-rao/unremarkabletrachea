@@ -629,6 +629,40 @@ export default function Scene4_PerspectivePuzzle() {
               Your timer and collected bones will carry over
             </p>
           )}
+          {/* Mobile-friendly touch button */}
+          <button
+            onClick={navigateToScene5}
+            style={{
+              background: 'linear-gradient(135deg, #9966ff, #6633cc)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 25px',
+              borderRadius: '30px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              margin: '15px auto 5px auto',
+              display: 'block',
+              boxShadow: '0 0 15px rgba(153, 102, 255, 0.5)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(153, 102, 255, 0.7)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 0 15px rgba(153, 102, 255, 0.5)';
+            }}
+            onTouchStart={(e) => {
+              e.currentTarget.style.transform = 'scale(0.98)';
+            }}
+            onTouchEnd={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            Enter Portal
+          </button>
         </div>
       )}
       

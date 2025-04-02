@@ -665,162 +665,6 @@ export default function Scene5() {
         <ShipModel />
       </Canvas>
       
-      {/* Start game overlay */}
-      {gameState === 'ready' && (
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'rgba(0, 0, 0, 0.7)',
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: 'rgba(0, 0, 0, 0.8)',
-            color: 'white',
-            padding: '25px',
-            borderRadius: '10px',
-            textAlign: 'center',
-            maxWidth: '500px',
-            boxShadow: '0 0 20px rgba(255, 102, 204, 0.5)'
-          }}>
-            <h2 style={{ color: '#ff66cc', marginTop: 0, fontSize: '28px' }}>Alveolar Harbor</h2>
-            <p style={{ marginBottom: '20px' }}>Collect bone fragments scattered across the harbor.<br />Navigate the area and find all 20 bones!</p>
-            
-            <button
-              onClick={startGame}
-              style={{
-                background: 'linear-gradient(135deg, #ff66cc, #9966ff)',
-                color: 'white',
-                border: 'none',
-                padding: '12px 24px',
-                borderRadius: '5px',
-                fontSize: '18px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                boxShadow: '0 2px 8px rgba(255, 102, 204, 0.5)',
-                transition: 'transform 0.2s, box-shadow 0.2s'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 102, 204, 0.7)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(255, 102, 204, 0.5)';
-              }}
-            >
-              Start Collecting
-            </button>
-          </div>
-        </div>
-      )}
-      
-      {/* Timer display */}
-      <div style={{
-        position: 'absolute',
-        bottom: '20px',
-        right: '20px',
-        background: 'rgba(0, 0, 0, 0.7)',
-        color: 'white',
-        padding: '15px',
-        borderRadius: '5px',
-        fontFamily: 'Arial, sans-serif',
-        textAlign: 'center',
-        minWidth: '150px',
-        boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)'
-      }}>
-        <div style={{ fontSize: '16px', marginBottom: '5px' }}>Time Remaining</div>
-        <div style={{ 
-          fontSize: '24px', 
-          fontWeight: 'bold',
-          color: gameState === 'game-over' ? 'red' : timer <= 30 ? '#ffcc00' : 'white' 
-        }}>
-          {formatTime(timer)}
-        </div>
-      </div>
-      
-      {/* Game over screen */}
-      {gameState === 'finished' && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'rgba(0, 0, 0, 0.8)',
-          color: 'white',
-          padding: '25px',
-          borderRadius: '10px',
-          fontFamily: 'Arial, sans-serif',
-          textAlign: 'center',
-          width: '350px',
-          boxShadow: '0 0 20px rgba(255, 102, 204, 0.5)'
-        }}>
-          <h2 style={{ color: '#ff66cc', marginTop: 0, fontSize: '28px' }}>Time's Up!</h2>
-          
-          <div style={{ 
-            display: 'flex',
-            justifyContent: 'space-between',
-            background: 'rgba(255, 102, 204, 0.2)', 
-            padding: '15px', 
-            borderRadius: '5px',
-            margin: '15px 0'
-          }}>
-            <div style={{ textAlign: 'left' }}>
-              <p style={{ margin: '0 0 5px 0', fontSize: '14px', opacity: 0.8 }}>Alveolar Harbor</p>
-              <p style={{ margin: '0', fontWeight: 'bold' }}>{inventory.length}/{bones.length}</p>
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <p style={{ margin: '0 0 5px 0', fontSize: '14px', opacity: 0.8 }}>Respiratory Zone</p>
-              <p style={{ margin: '0', fontWeight: 'bold' }}>{previousBones}</p>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ margin: '0 0 5px 0', fontSize: '14px', opacity: 0.8 }}>Total</p>
-              <p style={{ 
-                margin: '0', 
-                fontSize: '18px', 
-                fontWeight: 'bold', 
-                color: '#ff66cc' 
-              }}>
-                {previousBones + inventory.length}
-              </p>
-            </div>
-          </div>
-          
-          <button
-            onClick={navigateToScene6}
-            style={{
-              background: 'linear-gradient(135deg, #ff66cc, #9966ff)',
-              color: 'white',
-              border: 'none',
-              padding: '12px 24px',
-              borderRadius: '5px',
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginTop: '15px',
-              fontWeight: 'bold',
-              boxShadow: '0 2px 8px rgba(255, 102, 204, 0.5)',
-              transition: 'transform 0.2s, box-shadow 0.2s'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'scale(1.05)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 102, 204, 0.7)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(255, 102, 204, 0.5)';
-            }}
-          >
-            Continue to final scene
-          </button>
-        </div>
-      )}
-      
       {/* Portal activation message */}
       {portalActive && (
         <div style={{
@@ -828,37 +672,57 @@ export default function Scene5() {
           bottom: '50%',
           left: '50%',
           transform: 'translate(-50%, 50%)',
-          background: 'rgba(0, 0, 0, 0.8)',
+          background: 'rgba(0, 0, 0, 0.7)',
           color: 'white',
-          padding: '25px 30px',
-          borderRadius: '8px',
+          padding: '20px 30px',
+          borderRadius: '5px',
           fontFamily: 'Arial, sans-serif',
           textAlign: 'center',
-          boxShadow: '0 0 25px rgba(153, 102, 255, 0.7)',
+          boxShadow: '0 0 20px rgba(153, 102, 255, 0.7)',
           animation: 'pulse 1.5s infinite',
           zIndex: 10000
         }}>
-          <h2 style={{ margin: '0 0 15px 0', color: '#9966ff', fontSize: '28px' }}>Portal Activated!</h2>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            background: 'rgba(153, 102, 255, 0.2)',
-            padding: '12px 18px',
-            borderRadius: '6px',
-            fontSize: '18px',
-            fontWeight: 'bold'
-          }}>
-            <span style={{ 
-              background: 'rgba(153, 102, 255, 0.3)', 
-              padding: '4px 8px', 
-              borderRadius: '4px'
-            }}>
-              E
-            </span>
-            <span>to enter the Respiratory Zone</span>
-          </div>
+          <h2 style={{ margin: '0 0 10px 0', color: '#9966ff' }}>Portal Activated!</h2>
+          <p>Press [E] to return to the Respiratory Zone</p>
+          {gameState === 'playing' && (
+            <p style={{ fontSize: '14px', marginTop: '5px', opacity: 0.8 }}>
+              Your timer and collected bones will carry over
+            </p>
+          )}
+          {/* Mobile-friendly touch button */}
+          <button
+            onClick={navigateToScene4}
+            style={{
+              background: 'linear-gradient(135deg, #9966ff, #6633cc)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 25px',
+              borderRadius: '30px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              margin: '15px auto 5px auto',
+              display: 'block',
+              boxShadow: '0 0 15px rgba(153, 102, 255, 0.5)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(153, 102, 255, 0.7)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 0 15px rgba(153, 102, 255, 0.5)';
+            }}
+            onTouchStart={(e) => {
+              e.currentTarget.style.transform = 'scale(0.98)';
+            }}
+            onTouchEnd={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            Enter Portal
+          </button>
         </div>
       )}
       
@@ -866,9 +730,9 @@ export default function Scene5() {
       <style>
         {`
           @keyframes pulse {
-            0% { transform: translate(-50%, 50%) scale(1); box-shadow: 0 0 25px rgba(153, 102, 255, 0.7); }
-            50% { transform: translate(-50%, 50%) scale(1.05); box-shadow: 0 0 35px rgba(153, 102, 255, 0.9); }
-            100% { transform: translate(-50%, 50%) scale(1); box-shadow: 0 0 25px rgba(153, 102, 255, 0.7); }
+            0% { transform: translate(-50%, 50%) scale(1); }
+            50% { transform: translate(-50%, 50%) scale(1.05); }
+            100% { transform: translate(-50%, 50%) scale(1); }
           }
         `}
       </style>
@@ -1379,14 +1243,15 @@ function Instructions({ show }) {
         }}>
           <p style={{ margin: '0', fontSize: '16px' }}>Continue your bone collection journey!</p>
           
+          {/* Movement controls instruction */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
             gap: '10px',
-            background: 'rgba(255, 102, 204, 0.15)',
+            margin: '10px 0',
             padding: '8px',
-            borderRadius: '5px'
+            fontSize: '14px'
           }}>
             <span style={{ fontWeight: 'bold' }}>WASD</span>
             <span>or</span>
@@ -1394,6 +1259,7 @@ function Instructions({ show }) {
             <span>to move</span>
           </div>
           
+          {/* Teleport instruction */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -1407,6 +1273,7 @@ function Instructions({ show }) {
             <span>anywhere to teleport</span>
           </div>
           
+          {/* Bone collection instruction */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -1414,7 +1281,8 @@ function Instructions({ show }) {
             gap: '10px',
             background: 'rgba(255, 102, 204, 0.15)',
             padding: '8px',
-            borderRadius: '5px'
+            borderRadius: '5px',
+            marginTop: '10px'
           }}>
             <span>Stand near bones to collect them</span>
           </div>

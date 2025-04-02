@@ -12,6 +12,12 @@ try {
   // ascensionSound = "https://example.com/fallback-sound.mp3";
 }
 
+// Detect if the device is mobile
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+         (window.innerWidth <= 800);
+};
+
 // Lungs Model component
 function LungsModel() {
   const fbx = useFBX('/models/lungs_breathing.fbx');
@@ -247,7 +253,7 @@ function SparkleParticles({ count = 100, visible = false }) {
 }
 
 // Main game component
-function Game() {
+const Game = React.forwardRef((props, ref) => {
   const [position, setPosition] = useState([0, -9, 0]);
   const [velocity, setVelocity] = useState([0, 0, 0]);
   const [isJumping, setIsJumping] = useState(false);
@@ -256,6 +262,8 @@ function Game() {
   const positionRef = useRef([0, -9, 0]);
   const velocityRef = useRef([0, 0, 0]);
   const cameraRef = useRef();
+  // Create a ref to manage jumps triggered via touchscreen
+  const jumpTriggered = useRef(false);
 
   // Game constants
   const GRAVITY = 0.05;
@@ -343,6 +351,22 @@ function Game() {
     return { collision: false };
   };
 
+  // Jump function that can be triggered by both keyboard and touch
+  const triggerJump = () => {
+    if (onGround) {
+      jumpTriggered.current = true;
+    }
+  };
+
+  // Expose the triggerJump method via ref
+  useEffect(() => {
+    if (ref) {
+      ref.current = {
+        triggerJump
+      };
+    }
+  }, [ref]);
+
   // Game loop
   useFrame(({ camera }) => {
     let moveX = 0;
@@ -374,11 +398,12 @@ function Game() {
       moveZ -= cameraDirection.z * MOVE_SPEED;
     }
 
-    // Handle jump input
-    if (keysPressed.current['x'] && onGround) {
+    // Handle jump input from keyboard or touch
+    if ((keysPressed.current['x'] || jumpTriggered.current) && onGround) {
       currentVelocity[1] = JUMP_FORCE;
       setOnGround(false);
       setIsJumping(true);
+      jumpTriggered.current = false; // Reset the jump trigger
       console.log("Jumping! Initial velocity:", JUMP_FORCE);
     }
 
@@ -448,7 +473,7 @@ function Game() {
       ))}
     </>
   );
-}
+});
 
 // Main component
 function NewScene5() {
@@ -459,6 +484,8 @@ function NewScene5() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const cameraRef = useRef();
   const initialZoomCompleted = useRef(false);
+  const isMobileDevice = isMobile();
+  const gameRef = useRef(null);
   
   // Camera zoom effect after 4 seconds - only along X axis
   useEffect(() => {
@@ -501,6 +528,28 @@ function NewScene5() {
     
     return () => clearTimeout(timer);
   }, [cameraPosition]);
+  
+  // Function to trigger jump via mobile button
+  const handleMobileJump = () => {
+    if (gameRef.current && gameRef.current.triggerJump) {
+      gameRef.current.triggerJump();
+      
+      // Also increment jump count for game progression
+      if (showMessage && !ascendingCamera) {
+        setJumpCount(prevCount => {
+          const newCount = prevCount + 1;
+          console.log(`Jump count (mobile): ${newCount}`);
+          
+          // Start camera ascension after 15 jumps
+          if (newCount >= 15 && !ascendingCamera) {
+            setAscendingCamera(true);
+          }
+          
+          return newCount;
+        });
+      }
+    }
+  };
   
   // Track X key presses for jumping
   useEffect(() => {
@@ -598,7 +647,7 @@ function NewScene5() {
           />
         </mesh>
         <LungsModel />
-        <Game />
+        <Game ref={gameRef} />
         <SparkleParticles visible={ascendingCamera} />
         <OrbitControls 
           ref={cameraRef}
@@ -644,24 +693,65 @@ function NewScene5() {
         />
       </Canvas>
       
-      {/* Instructions */}
-      <div style={{
-        position: 'absolute',
-        top: '20px',
-        left: '20px',
-        background: 'rgba(0, 0, 0, 0.7)',
-        color: 'white',
-        padding: '15px',
-        borderRadius: '5px',
-        fontFamily: 'Arial, sans-serif'
-      }}>
-        <h3 style={{ margin: '0 0 10px 0' }}>Controls:</h3>
-        <p style={{ margin: '5px 0' }}>WASD / Arrows: Move</p>
-        <p style={{ margin: '5px 0' }}>X: Jump</p>
-        <p style={{ margin: '5px 0' }}>Mouse: Rotate View</p>
-        <p style={{ margin: '5px 0' }}>Scroll: Zoom</p>
-        <p style={{ margin: '5px 0' }}>Right Click + Drag: Pan</p>
-      </div>
+      {/* Mobile Jump Button */}
+      {isMobileDevice && (
+        <button
+          onClick={handleMobileJump}
+          style={{
+            position: 'absolute',
+            bottom: '30px',
+            right: '30px',
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #ff66cc, #9966ff)',
+            color: 'white',
+            fontSize: '22px',
+            fontWeight: 'bold',
+            border: 'none',
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            opacity: 0.9,
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+            animation: 'float 2s infinite ease-in-out'
+          }}
+          onTouchStart={(e) => {
+            e.currentTarget.style.transform = 'scale(0.95)';
+            e.currentTarget.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.3)';
+          }}
+          onTouchEnd={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.3)';
+          }}
+        >
+          JUMP
+        </button>
+      )}
+      
+      {/* Instructions - Only shown on non-mobile */}
+      {!isMobileDevice && (
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          background: 'rgba(0, 0, 0, 0.7)',
+          color: 'white',
+          padding: '15px',
+          borderRadius: '5px',
+          fontFamily: 'Arial, sans-serif'
+        }}>
+          <h3 style={{ margin: '0 0 10px 0' }}>Controls:</h3>
+          <p style={{ margin: '5px 0' }}>WASD / Arrows: Move</p>
+          <p style={{ margin: '5px 0' }}>X: Jump</p>
+          <p style={{ margin: '5px 0' }}>Mouse: Rotate View</p>
+          <p style={{ margin: '5px 0' }}>Scroll: Zoom</p>
+          <p style={{ margin: '5px 0' }}>Right Click + Drag: Pan</p>
+        </div>
+      )}
       
       {/* Game progression message */}
       {showMessage && !showSuccessMessage && (
@@ -688,7 +778,7 @@ function NewScene5() {
             color: '#ffccee',
             fontWeight: 'bold'
           }}>
-            With all the bones you've collected, jump up by pressing X, ascend into the lungs to start your repairs!
+            With all the bones you've collected, jump up by pressing X{isMobileDevice ? ' or the JUMP button' : ''}, ascend into the lungs to start your repairs!
           </p>
           
           {/* Ascension message */}
@@ -787,6 +877,12 @@ function NewScene5() {
           @keyframes fadeInScale {
             0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
             100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          }
+          
+          @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
           }
         `}
       </style>
