@@ -475,6 +475,16 @@ const Game = React.forwardRef((props, ref) => {
   );
 });
 
+// Add font-face declaration at the top of the file
+const fontStyle = `
+  @font-face {
+    font-family: 'DeterminationMono';
+    src: url('/fonts/DeterminationMonoWebRegular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+`;
+
 // Main component
 function NewScene5() {
   const [cameraPosition, setCameraPosition] = useState([50, 5, 0]);
@@ -482,11 +492,64 @@ function NewScene5() {
   const [jumpCount, setJumpCount] = useState(0);
   const [ascendingCamera, setAscendingCamera] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [totalBoneCount, setTotalBoneCount] = useState(() => {
+    const savedBones = sessionStorage.getItem('totalCollectedBones');
+    return savedBones ? parseInt(savedBones, 10) : 0;
+  });
+  const [inventory, setInventory] = useState([]);
+  const [previousBones, setPreviousBones] = useState(() => {
+    const savedBones = sessionStorage.getItem('totalCollectedBones');
+    return savedBones ? parseInt(savedBones, 10) : 0;
+  });
+  const [gameState, setGameState] = useState('idle');
+  const [timer, setTimer] = useState(0);
   const cameraRef = useRef();
   const initialZoomCompleted = useRef(false);
   const isMobileDevice = isMobile();
   const gameRef = useRef(null);
   
+  // Get total bone count and game state from session storage
+  useEffect(() => {
+    const savedBones = sessionStorage.getItem('totalCollectedBones');
+    const savedGameState = sessionStorage.getItem('gameState');
+    const savedTimer = sessionStorage.getItem('timeRemaining');
+    
+    if (savedBones) {
+      const count = parseInt(savedBones, 10);
+      console.log('Loaded total bone count from session storage:', count);
+      setTotalBoneCount(count);
+      setPreviousBones(count);
+    } else {
+      console.log('No saved bone count found in session storage');
+    }
+    
+    if (savedGameState) {
+      setGameState(savedGameState);
+    }
+    
+    if (savedTimer) {
+      setTimer(parseInt(savedTimer, 10));
+    }
+  }, []);
+
+  // Save bone count to session storage whenever it changes
+  useEffect(() => {
+    if (totalBoneCount > 0) {
+      console.log('Saving total bone count to session storage:', totalBoneCount);
+      sessionStorage.setItem('totalCollectedBones', totalBoneCount.toString());
+    }
+  }, [totalBoneCount]);
+
+  // Function to update total bone count when new bones are collected
+  useEffect(() => {
+    if (inventory.length > 0) {
+      const newTotal = previousBones + inventory.length;
+      console.log('Updating total bone count:', newTotal, '(previous:', previousBones, '+ current:', inventory.length, ')');
+      setTotalBoneCount(newTotal);
+      sessionStorage.setItem('totalCollectedBones', newTotal.toString());
+    }
+  }, [inventory.length, previousBones]);
+
   // Camera zoom effect after 4 seconds - only along X axis
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -540,8 +603,8 @@ function NewScene5() {
           const newCount = prevCount + 1;
           console.log(`Jump count (mobile): ${newCount}`);
           
-          // Start camera ascension after 15 jumps
-          if (newCount >= 15 && !ascendingCamera) {
+          // Start camera ascension after 5 jumps
+          if (newCount >= 5 && !ascendingCamera) {
             setAscendingCamera(true);
           }
           
@@ -560,8 +623,8 @@ function NewScene5() {
           const newCount = prevCount + 1;
           console.log(`Jump count: ${newCount}`);
           
-          // Start camera ascension after 15 jumps
-          if (newCount >= 15 && !ascendingCamera) {
+          // Start camera ascension after 5 jumps
+          if (newCount >= 5 && !ascendingCamera) {
             setAscendingCamera(true);
           }
           
@@ -622,8 +685,46 @@ function NewScene5() {
     }
   }, [ascendingCamera]);
   
+  // Function to navigate to FinalScene
+  const navigateToScene4 = () => {
+    // Save the current bone count to sessionStorage before navigating
+    const totalCount = previousBones + inventory.length;
+    console.log('Navigating to FinalScene with total bone count:', totalCount);
+    sessionStorage.setItem('totalCollectedBones', totalCount.toString());
+    
+    // Save the game state and timer to sessionStorage for persistence
+    if (gameState === 'playing') {
+      sessionStorage.setItem('gameState', gameState);
+      sessionStorage.setItem('timeRemaining', timer.toString());
+    }
+    
+    // Navigate to Final Scene
+    try {
+      const buttons = document.querySelectorAll('button');
+      const finalSceneButton = Array.from(buttons).find(button => 
+        button.textContent.includes('Final Scene') || button.textContent.includes('finalscene')
+      );
+      
+      if (finalSceneButton) {
+        finalSceneButton.click();
+      } else {
+        if (window.parent && window.parent.setCurrentScene) {
+          window.parent.setCurrentScene('finalscene');
+        } else if (window.setCurrentScene) {
+          window.setCurrentScene('finalscene');
+        } else {
+          window.location.hash = 'finalscene';
+        }
+      }
+    } catch (e) {
+      console.error('Error navigating to Final Scene:', e);
+      window.location.hash = 'finalscene';
+    }
+  };
+  
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+      <style>{fontStyle}</style>
       <Canvas camera={{ 
         position: cameraPosition, 
         fov: 60
@@ -717,7 +818,8 @@ function NewScene5() {
             opacity: 0.9,
             touchAction: 'manipulation',
             WebkitTapHighlightColor: 'transparent',
-            animation: 'float 2s infinite ease-in-out'
+            animation: 'float 2s infinite ease-in-out',
+            fontFamily: 'DeterminationMono, monospace'
           }}
           onTouchStart={(e) => {
             e.currentTarget.style.transform = 'scale(0.95)';
@@ -742,7 +844,7 @@ function NewScene5() {
           color: 'white',
           padding: '15px',
           borderRadius: '5px',
-          fontFamily: 'Arial, sans-serif'
+          fontFamily: 'DeterminationMono, monospace'
         }}>
           <h3 style={{ margin: '0 0 10px 0' }}>Controls:</h3>
           <p style={{ margin: '5px 0' }}>WASD / Arrows: Move</p>
@@ -764,7 +866,7 @@ function NewScene5() {
           color: 'white',
           padding: '20px 30px',
           borderRadius: '8px',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'DeterminationMono, monospace',
           textAlign: 'center',
           maxWidth: '800px',
           boxShadow: '0 0 20px rgba(255, 102, 204, 0.6)',
@@ -778,7 +880,7 @@ function NewScene5() {
             color: '#ffccee',
             fontWeight: 'bold'
           }}>
-            With all the bones you've collected, jump up by pressing X{isMobileDevice ? ' or the JUMP button' : ''}, ascend into the lungs to start your repairs!
+            You have collected {totalBoneCount} bones! Jump up by pressing X{isMobileDevice ? ' or the JUMP button' : ''} and ascend into the lungs to start repairs!
           </p>
           
           {/* Ascension message */}
@@ -807,7 +909,7 @@ function NewScene5() {
           color: 'white',
           padding: '30px 40px',
           borderRadius: '12px',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'DeterminationMono, monospace',
           textAlign: 'center',
           maxWidth: '800px',
           boxShadow: '0 0 30px rgba(155, 89, 182, 0.8)',
@@ -823,17 +925,7 @@ function NewScene5() {
             You can almost breathe again
           </h2>
           <button
-            onClick={() => {
-              // Navigate to final scene
-              const finalSceneButton = document.getElementById('finalScene');
-              if (finalSceneButton) {
-                finalSceneButton.click();
-              } else {
-                console.warn('Final scene button not found');
-                // Fallback navigation
-                window.location.href = '/finalScene';
-              }
-            }}
+            onClick={navigateToScene4}
             style={{
               padding: '12px 25px',
               backgroundColor: 'rgba(155, 89, 182, 0.7)',
@@ -844,7 +936,8 @@ function NewScene5() {
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              marginTop: '20px'
+              marginTop: '20px',
+              fontFamily: 'DeterminationMono, monospace'
             }}
             onMouseOver={(e) => {
               e.target.style.backgroundColor = 'rgba(155, 89, 182, 0.9)';

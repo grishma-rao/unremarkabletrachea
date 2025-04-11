@@ -5,6 +5,17 @@ import { KeyboardControlsWrapper } from './KeyboardControls';
 import CharacterController from './CharacterController';
 import LoadingScreen from './LoadingScreen';
 import * as THREE from 'three';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+
+// Add font-face declaration in a style tag
+const fontStyle = `
+  @font-face {
+    font-family: 'DeterminationMono';
+    src: url('/fonts/DeterminationMonoWebRegular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+`;
 
 // Undulating Ground component
 function UndulatingGround() {
@@ -174,6 +185,26 @@ function StarryBackground() {
   );
 }
 
+// Custom font text component
+function CustomFontText({ text, position = [0, 0, 0], fontSize = 0.5, color = '#ffffff' }) {
+  return (
+    <Text
+      position={position}
+      fontSize={fontSize}
+      color={color}
+      font="/fonts/DeterminationMonoWebRegular.ttf"
+      anchorX="center"
+      anchorY="middle"
+      maxWidth={10}
+      lineHeight={1}
+      letterSpacing={0.02}
+      textAlign="center"
+    >
+      {text}
+    </Text>
+  );
+}
+
 // Text animation component
 function AnimatedText({ startAnimation }) {
   const [textIndex, setTextIndex] = useState(0);
@@ -215,17 +246,12 @@ function AnimatedText({ startAnimation }) {
   
   return (
     <group ref={textRef} position={[0, 2, 0]}>
-      <Text
-        color="white"
+      <CustomFontText
+        text={textLines[textIndex]}
+        position={[0, 0, 0]}
         fontSize={0.3}
-        maxWidth={5}
-        lineHeight={1.5}
-        textAlign="center"
-        anchorX="center"
-        anchorY="middle"
-      >
-        {textLines[textIndex]}
-      </Text>
+        color="white"
+      />
     </group>
   );
 }
@@ -286,6 +312,18 @@ function StaticCharacter({ isRibsScene }) {
   );
 }
 
+// Add a test text component to verify font loading
+function TestFontText() {
+  return (
+    <CustomFontText 
+      text="Testing Custom Font"
+      position={[0, 5, -10]}
+      fontSize={0.3}
+      color="#ff66cc"
+    />
+  );
+}
+
 // Placeholder for capsule landing animation
 function CapsuleLanding({ onAnimationComplete }) {
   const capsuleRef = useRef();
@@ -320,10 +358,13 @@ function CapsuleLanding({ onAnimationComplete }) {
   });
   
   return (
-    <mesh ref={capsuleRef} position={[0, 10, 0]}>
-      <capsuleGeometry args={[1, 2, 4, 8]} />
-      <meshStandardMaterial color="silver" />
-    </mesh>
+    <>
+      {/* Capsule */}
+      <mesh ref={capsuleRef} position={[0, 10, 0]}>
+        <capsuleGeometry args={[1, 2, 4, 8]} />
+        <meshStandardMaterial color="silver" />
+      </mesh>
+    </>
   );
 }
 
@@ -436,6 +477,30 @@ function RibsModel({ onAnimationComplete }) {
 
 // Skip Intro Button component
 function SkipIntroButton({ onClick }) {
+  const handleSkip = () => {
+    // Try to find the button in the parent App component and click it
+    const buttons = document.querySelectorAll('button');
+    const scene4Button = Array.from(buttons).find(button => 
+      button.textContent.includes('Scene 4') || button.textContent.includes('scene4')
+    );
+    
+    if (scene4Button) {
+      console.log('Found Scene 4 button, clicking it');
+      scene4Button.click();
+    } else {
+      // Use the state-based approach
+      console.log('No Scene 4 button found, trying window.setCurrentScene');
+      if (window.parent && window.parent.setCurrentScene) {
+        window.parent.setCurrentScene('scene4');
+      } else if (window.setCurrentScene) {
+        window.setCurrentScene('scene4');
+      } else {
+        console.log('Falling back to hash navigation');
+        window.location.hash = 'scene4';
+      }
+    }
+  };
+
   return (
     <div style={{
       position: 'fixed',
@@ -444,7 +509,7 @@ function SkipIntroButton({ onClick }) {
       zIndex: 9999
     }}>
       <button
-        onClick={onClick}
+        onClick={handleSkip}
         style={{
           padding: '10px 20px',
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -452,7 +517,7 @@ function SkipIntroButton({ onClick }) {
           border: '1px solid white',
           borderRadius: '5px',
           cursor: 'pointer',
-          fontFamily: 'Arial',
+          fontFamily: 'DeterminationMono, monospace',
           fontSize: '14px',
           transition: 'all 0.3s ease'
         }}
@@ -482,7 +547,6 @@ function NextSceneButton({ onClick }) {
       left: '50%',
       transform: 'translateX(-50%)',
       zIndex: 9999,
-      // Glow effect
       boxShadow: hover 
         ? '0 0 25px 10px rgba(255, 105, 180, 0.7), 0 0 10px 2px rgba(255, 255, 255, 0.9)' 
         : '0 0 15px 5px rgba(255, 105, 180, 0.5), 0 0 5px 1px rgba(255, 255, 255, 0.7)',
@@ -500,12 +564,11 @@ function NextSceneButton({ onClick }) {
           border: hover ? '2px solid white' : '1px solid rgba(255, 255, 255, 0.7)',
           borderRadius: '30px',
           cursor: 'pointer',
-          fontFamily: 'Arial',
+          fontFamily: 'DeterminationMono, monospace',
           fontSize: '16px',
           fontWeight: 'bold',
           transition: 'all 0.3s ease',
-          transform: hover ? 'scale(1.05)' : 'scale(1)',
-          textShadow: '0 0 5px white'
+          transform: hover ? 'scale(1.05)' : 'scale(1)'
         }}
       >
         Can you repair the damage?
@@ -599,6 +662,7 @@ function Scene4() {
   
   return (
     <KeyboardControlsWrapper>
+      <style>{fontStyle}</style>
       <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
         {/* Skip Intro Button */}
         {sceneState === 'text-animation' && (

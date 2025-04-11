@@ -1,10 +1,89 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, Grid } from '@react-three/drei';
 import FBXModel from './FBXModel';
 import CharacterController from './CharacterController';
 import LoadingScreen from './LoadingScreen';
 import { KeyboardControlsWrapper } from './KeyboardControls';
+import { useFBX } from '@react-three/fiber';
+
+function FBXModel({ path, position = [0, 0, 0], scale = 0.01, rotation = [0, 0, 0] }) {
+  const fbx = useFBX(path);
+  const modelRef = useRef();
+  
+  useEffect(() => {
+    if (modelRef.current) {
+      console.log(`FBX model loaded: ${path}`);
+      
+      modelRef.current.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+    }
+  }, [path]);
+  
+  return (
+    <primitive 
+      ref={modelRef}
+      object={fbx} 
+      position={position}
+      scale={scale}
+      rotation={rotation}
+    />
+  );
+}
+
+// Trachea Model component
+function TracheaFBXModel() {
+  const [error, setError] = useState(null);
+  const fbx = useFBX('/models/trachea.fbx');
+  const modelRef = useRef();
+  
+  useEffect(() => {
+    try {
+      if (modelRef.current) {
+        console.log('🚀 Attempting to load trachea model...');
+        console.log('Model object:', fbx);
+        
+        modelRef.current.traverse((child) => {
+          if (child.isMesh) {
+            console.log('Found mesh:', child.name);
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        
+        console.log('✅ Trachea model successfully loaded and configured!');
+        console.log('Model details:', {
+          position: modelRef.current.position,
+          rotation: modelRef.current.rotation,
+          scale: modelRef.current.scale,
+          children: modelRef.current.children.length
+        });
+      }
+    } catch (err) {
+      console.error('❌ Error loading trachea model:', err);
+      setError(err.message);
+    }
+  }, [fbx]);
+  
+  if (error) {
+    console.error('Trachea model error:', error);
+    return null;
+  }
+  
+  return (
+    <primitive 
+      ref={modelRef}
+      object={fbx} 
+      position={[0, 2, -5]}
+      scale={0.01}
+      rotation={[0, Math.PI / 2, 0]}
+    />
+  );
+}
 
 function Scene() {
   return (
@@ -37,6 +116,9 @@ function Scene() {
               position={[2, 0, 1]} 
               scale={0.02}
             />
+            
+            {/* Trachea model */}
+            <TracheaFBXModel />
             
             {/* Add a grid for reference */}
             <Grid infiniteGrid cellSize={1} cellThickness={0.6} sectionSize={5} />

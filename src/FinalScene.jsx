@@ -3,6 +3,17 @@ import './styles.css';
 import * as THREE from 'three';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { useFBX, OrbitControls, Text } from '@react-three/drei';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+
+// Add font-face declaration at the top of the file
+const fontStyle = `
+  @font-face {
+    font-family: 'DeterminationMono';
+    src: url('/fonts/DeterminationMonoWebRegular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+`;
 
 // Green glowing portal component
 function VibeVersePortal() {
@@ -371,14 +382,40 @@ function HealingParticles() {
   return null;
 }
 
+// Custom font text component
+function CustomFontText({ text, position = [0, 0, 0], fontSize = 0.5, color = '#ffffff' }) {
+  return (
+    <Text
+      position={position}
+      fontSize={fontSize}
+      color={color}
+      anchorX="center"
+      anchorY="middle"
+      font="/fonts/DeterminationMonoWebRegular.ttf"
+    >
+      {text}
+    </Text>
+  );
+}
+
 // Main scene component
 function FinalScene() {
   const [isRibsScene, setIsRibsScene] = useState(false);
   const [showStartButton, setShowStartButton] = useState(true);
   const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+  const [showInsufficientBones, setShowInsufficientBones] = useState(false);
   const [message, setMessage] = useState('');
+  const [totalBoneCount, setTotalBoneCount] = useState(0);
   const cameraPositionRef = useRef([0, 0, 7]);
   const cameraFovRef = useRef(60);
+  
+  // Get total bone count from session storage
+  useEffect(() => {
+    const savedBones = sessionStorage.getItem('totalCollectedBones');
+    if (savedBones) {
+      setTotalBoneCount(parseInt(savedBones, 10));
+    }
+  }, []);
   
   // Check if coming from a portal
   useEffect(() => {
@@ -392,6 +429,13 @@ function FinalScene() {
   
   // Start the bone repair sequence
   const startRepair = () => {
+    if (totalBoneCount < 20) {
+      setShowStartButton(false);
+      setShowInsufficientBones(true);
+      setMessage(`You need to collect more bones! You have ${totalBoneCount} out of 20 required bones.`);
+      return;
+    }
+    
     setShowStartButton(false);
     setIsRibsScene(true);
     setMessage('Repairing bones...');
@@ -434,6 +478,7 @@ function FinalScene() {
   
   return (
     <div className="scene-container">
+      <style>{fontStyle}</style>
       <Canvas
         camera={{ position: cameraPositionRef.current, fov: cameraFovRef.current }}
         shadows
@@ -452,6 +497,14 @@ function FinalScene() {
         />
         <pointLight position={[0, 0, 3]} intensity={50} color="#ffd700" />
         <pointLight position={[6, 0, 0]} intensity={5} color="#00ff00" />
+        
+        {/* Custom font text */}
+        <CustomFontText 
+          text={`Assembling ${totalBoneCount} bones`}
+          position={[0, 2, 0]}
+          fontSize={0.3}
+          color="#ffd700"
+        />
         
         {/* Characters and animations */}
         <StaticCharacter isRibsScene={isRibsScene} />
@@ -485,20 +538,52 @@ function FinalScene() {
           <button 
             className="start-button gold-theme"
             onClick={startRepair}
+            style={{
+              fontFamily: 'DeterminationMono, monospace'
+            }}
           >
             Begin Bone Repairs
           </button>
         </div>
       )}
       
-      {message && !showCompletionMessage && (
-        <div className="message-overlay gold-theme">
+      {message && !showCompletionMessage && !showInsufficientBones && (
+        <div className="message-overlay gold-theme" style={{
+          fontFamily: 'DeterminationMono, monospace'
+        }}>
           <p>{message}</p>
         </div>
       )}
       
+      {showInsufficientBones && (
+        <div className="completion-message gold-theme" style={{
+          fontFamily: 'DeterminationMono, monospace'
+        }}>
+          <p style={{ 
+            fontSize: '22px', 
+            margin: '0 0 25px 0',
+            lineHeight: '1.8',
+            color: '#ffd700',
+            textAlign: 'center'
+          }}>
+            {message}
+          </p>
+          <button 
+            className="return-button gold-theme"
+            onClick={resetGame}
+            style={{
+              fontFamily: 'DeterminationMono, monospace'
+            }}
+          >
+            Play Again
+          </button>
+        </div>
+      )}
+      
       {showCompletionMessage && (
-        <div className="completion-message gold-theme">
+        <div className="completion-message gold-theme" style={{
+          fontFamily: 'DeterminationMono, monospace'
+        }}>
           <p style={{ 
             fontSize: '22px', 
             margin: '0 0 25px 0',
@@ -509,9 +594,28 @@ function FinalScene() {
             Your bones are healed.<br />
             A madness appears in the sky.
           </p>
+          <div style={{
+            background: 'rgba(0, 0, 0, 0.7)',
+            padding: '15px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            textAlign: 'center'
+          }}>
+            <p style={{ 
+              fontSize: '18px',
+              margin: '0',
+              color: '#ffd700',
+              fontFamily: 'DeterminationMono, monospace'
+            }}>
+              Score: {totalBoneCount}
+            </p>
+          </div>
           <button 
             className="return-button gold-theme"
             onClick={resetGame}
+            style={{
+              fontFamily: 'DeterminationMono, monospace'
+            }}
           >
             Begin Again
           </button>
@@ -520,7 +624,9 @@ function FinalScene() {
       
       {/* Portal instruction overlay */}
       {showCompletionMessage && (
-        <div className="portal-instruction">
+        <div className="portal-instruction" style={{
+          fontFamily: 'DeterminationMono, monospace'
+        }}>
           <p>Or enter the <span className="green-text">Vibeverse Portal</span> to continue your journey</p>
         </div>
       )}

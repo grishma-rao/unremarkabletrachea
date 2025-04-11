@@ -4,13 +4,6 @@ import { OrbitControls, Environment, Html, useFBX, Stars } from '@react-three/dr
 import * as THREE from 'three';
 import BoneModel from './BoneModel';
 
-// Format time function
-const formatTime = (seconds) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
-
 // Audio context for sound effects
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioContext;
@@ -436,6 +429,7 @@ export default function Scene5() {
     { id: 8, position: [20, 0, 0], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 9, position: [-20, 0, 0], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 10, position: [0, 0, -20], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    // Additional bones
     { id: 11, position: [8, 0, 18], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 12, position: [-18, 0, 8], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 13, position: [12, 0, -5], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
@@ -445,28 +439,7 @@ export default function Scene5() {
     { id: 17, position: [5, 0, 22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 18, position: [-22, 0, -5], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 19, position: [16, 0, -16], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 20, position: [-16, 0, 16], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    // Additional bones to double the count
-    { id: 21, position: [25, 0, 5], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 22, position: [-25, 0, 5], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 23, position: [5, 0, 25], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 24, position: [-5, 0, -25], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 25, position: [22, 0, -8], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 26, position: [-22, 0, 8], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 27, position: [8, 0, -22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 28, position: [-8, 0, 22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 29, position: [28, 0, 0], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 30, position: [-28, 0, 0], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 31, position: [0, 0, 28], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 32, position: [0, 0, -28], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 33, position: [18, 0, -18], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 34, position: [-18, 0, 18], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 35, position: [12, 0, 22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 36, position: [-12, 0, -22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 37, position: [22, 0, 12], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 38, position: [-22, 0, -12], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 39, position: [15, 0, -25], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 40, position: [-15, 0, 25], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false }
+    { id: 20, position: [-16, 0, 16], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false }
   ]);
   
   // State for teleportation target
@@ -499,49 +472,6 @@ export default function Scene5() {
     }
   }, []);
   
-  // Function to navigate to Scene6 after game over
-  const navigateToScene6 = () => {
-    // Calculate total bone count (previous bones + current inventory)
-    const totalBones = previousBones + inventory.length;
-    
-    // Save the total bone count to sessionStorage
-    sessionStorage.setItem('totalCollectedBones', totalBones.toString());
-    console.log(`Navigating to Scene6 with total bone count: ${totalBones}`);
-    
-    // Clear game state since the game is over
-    sessionStorage.removeItem('gameState');
-    sessionStorage.removeItem('timeRemaining');
-    
-    // Navigate to Scene 6
-    try {
-      // Try to find the button in the parent App component and click it
-      const buttons = document.querySelectorAll('button');
-      const scene6Button = Array.from(buttons).find(button => 
-        button.textContent.includes('Scene 6') || button.textContent.includes('scene6')
-      );
-      
-      if (scene6Button) {
-        console.log('Found Scene 6 button, clicking it');
-        scene6Button.click();
-      } else {
-        // Use the state-based approach
-        console.log('No Scene 6 button found, trying window.setCurrentScene');
-        if (window.parent && window.parent.setCurrentScene) {
-          window.parent.setCurrentScene('scene6');
-        } else if (window.setCurrentScene) {
-          window.setCurrentScene('scene6');
-        } else {
-          console.log('Falling back to hash navigation');
-          window.location.hash = 'scene6';
-        }
-      }
-    } catch (e) {
-      console.error('Error navigating to Scene 6:', e);
-      // Emergency fallback
-      window.location.hash = 'scene6';
-    }
-  };
-  
   // Timer effect
   useEffect(() => {
     let timerInterval;
@@ -560,10 +490,8 @@ export default function Scene5() {
             // Clear game state in storage since game is over
             sessionStorage.removeItem('gameState');
             
-            // Use a timeout to ensure cleanup is complete before navigation
-            setTimeout(() => {
-              navigateToScene6();
-            }, 100);
+            // Navigate to Scene 6 when timer expires
+            navigateToScene6();
             
             return 0;
           }
@@ -573,11 +501,9 @@ export default function Scene5() {
     }
     
     return () => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-      }
+      if (timerInterval) clearInterval(timerInterval);
     };
-  }, [gameState, navigateToScene6]);
+  }, [gameState]);
   
   // Function to update total bone count when new bones are collected
   useEffect(() => {
@@ -632,6 +558,47 @@ export default function Scene5() {
     }
   };
   
+  // Function to navigate to Scene6 after game over
+  const navigateToScene6 = () => {
+    // Save the current bone count to sessionStorage
+    const totalCount = previousBones + inventory.length;
+    sessionStorage.setItem('totalCollectedBones', totalCount.toString());
+    console.log(`Navigating to Scene6 with total bone count: ${totalCount}`);
+    
+    // Clear game state since the game is over
+    sessionStorage.removeItem('gameState');
+    sessionStorage.removeItem('timeRemaining');
+    
+    // Navigate to Scene 6
+    try {
+      // Try to find the button in the parent App component and click it
+      const buttons = document.querySelectorAll('button');
+      const scene6Button = Array.from(buttons).find(button => 
+        button.textContent.includes('Scene 6') || button.textContent.includes('scene6')
+      );
+      
+      if (scene6Button) {
+        console.log('Found Scene 6 button, clicking it');
+        scene6Button.click();
+      } else {
+        // Use the state-based approach
+        console.log('No Scene 6 button found, trying window.setCurrentScene');
+        if (window.parent && window.parent.setCurrentScene) {
+          window.parent.setCurrentScene('scene6');
+        } else if (window.setCurrentScene) {
+          window.setCurrentScene('scene6');
+        } else {
+          console.log('Falling back to hash navigation');
+          window.location.hash = 'scene6';
+        }
+      }
+    } catch (e) {
+      console.error('Error navigating to Scene 6:', e);
+      // Emergency fallback
+      window.location.hash = 'scene6';
+    }
+  };
+  
   const handlePositionChange = (newPosition) => {
     console.log("Character position changed:", newPosition);
     setCharacterPosition(newPosition);
@@ -649,6 +616,13 @@ export default function Scene5() {
     setResetCamera(true);
     // Reset flag after a short delay to allow the camera controls to detect the change
     setTimeout(() => setResetCamera(false), 100);
+  };
+  
+  // Format time function
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
   
   // Function to start game
@@ -687,7 +661,6 @@ export default function Scene5() {
           navigateToScene4={navigateToScene4}
           navigateToScene6={navigateToScene6}
           gameState={gameState}
-          timer={timer}
         />
         <ShipModel />
       </Canvas>
@@ -791,36 +764,6 @@ export default function Scene5() {
           color: '#ff66cc'
         }}>
           {previousBones}
-        </div>
-      </div>
-      
-      {/* Timer display */}
-      <div style={{
-        position: 'absolute',
-        bottom: '20px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        background: 'rgba(0, 0, 0, 0.7)',
-        color: 'white',
-        padding: '10px 20px',
-        borderRadius: '5px',
-        fontFamily: 'Arial, sans-serif',
-        textAlign: 'center',
-        boxShadow: '0 0 10px rgba(255, 102, 204, 0.5)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div style={{ fontSize: '14px', opacity: 0.8, marginBottom: '5px' }}>
-          Time Remaining
-        </div>
-        <div style={{ 
-          fontSize: '20px', 
-          fontWeight: 'bold',
-          color: '#ff66cc'
-        }}>
-          {formatTime(timer)}
         </div>
       </div>
       
@@ -949,24 +892,7 @@ export default function Scene5() {
 }
 
 // Scene component
-function Scene({ 
-  bones, 
-  setBones, 
-  characterPosition, 
-  setCharacterPosition, 
-  inventory, 
-  setInventory, 
-  showInstructions, 
-  teleportTarget, 
-  setTeleportTarget, 
-  resetCamera, 
-  portalActive, 
-  setPortalActive, 
-  navigateToScene4,
-  navigateToScene6,
-  gameState,
-  timer 
-}) {
+function Scene({ bones, setBones, characterPosition, setCharacterPosition, inventory, setInventory, showInstructions, teleportTarget, setTeleportTarget, resetCamera, portalActive, setPortalActive, navigateToScene4, navigateToScene6, gameState }) {
   console.log("RENDERING Scene COMPONENT", { characterPosition, bonesCount: bones.length, inventoryCount: inventory.length });
   
   // Position ref for proximity detection
@@ -974,6 +900,7 @@ function Scene({
   const { camera, raycaster, gl, scene } = useThree();
   const groundRef = useRef();
   const orbitControlsRef = useRef();
+  // Create portal active ref before it's used
   const portalActiveRef = useRef(false);
   
   // Initial camera position for reset
@@ -1019,11 +946,6 @@ function Scene({
   
   // Set up click handler for teleportation
   useEffect(() => {
-    if (!gl || !gl.domElement) {
-      console.warn('WebGL renderer or its DOM element not available');
-      return;
-    }
-
     const handleClick = (event) => {
       // Calculate mouse position in normalized device coordinates
       const mouse = new THREE.Vector2();
@@ -1042,6 +964,7 @@ function Scene({
         const object = intersect.object;
         
         // Check if we hit the ground or a ground-like object
+        // Look up through parent hierarchy to check for userData.isGround property
         let current = object;
         let isGround = false;
         
@@ -1073,9 +996,7 @@ function Scene({
     gl.domElement.addEventListener('click', handleClick);
     
     return () => {
-      if (gl && gl.domElement) {
-        gl.domElement.removeEventListener('click', handleClick);
-      }
+      gl.domElement.removeEventListener('click', handleClick);
     };
   }, [camera, raycaster, gl, scene, setTeleportTarget]);
   
@@ -1083,7 +1004,7 @@ function Scene({
   useEffect(() => {
     console.log("Setting up proximity detection");
     const proximityThreshold = 2; // Distance threshold for collection
-    const collectStep = 0.5; // Collection speed - increased from 0.04 to 0.5 for near-instant collection
+    const collectStep = 0.04; // Collection speed - increased from 0.01 to 0.04 for faster collection
     const portalThreshold = 7; // Distance threshold for portal activation - adjusted to 7 units
     
     // Check for portal proximity and bone collection
@@ -1228,7 +1149,7 @@ function Scene({
       }>
         <group>
           <BackgroundFBXModel 
-            path="/models/new_harbor.fbx" 
+            path="/models/harbor.fbx" 
             position={[0, -0.01, 0]} 
             scale={0.01} 
             rotation={[0, 0, 0]} 

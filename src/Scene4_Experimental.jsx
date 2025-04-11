@@ -287,7 +287,7 @@ function DoorModel({ portalActive }) {
         object={fbx} 
         position={[-30, 7, 5]} // Moved from -20 to -30 on X axis
         scale={0.002}  // Reduced from 0.003 to 0.002
-        rotation={[0, Math.PI / 2, 0]} // Rotated to face inward
+        rotation={[0, Math.PI, 0]} // Changed from Math.PI / 2 to Math.PI to rotate 90 degrees
       />
       
       {/* Portal light */}
@@ -398,7 +398,6 @@ export default function Scene4_PerspectivePuzzle() {
     { id: 8, position: [20, 0, 0], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 9, position: [-20, 0, 0], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 10, position: [0, 0, -20], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    // Add more bones with randomized positions
     { id: 11, position: [8, 0, 18], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 12, position: [-18, 0, 8], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 13, position: [12, 0, -5], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
@@ -408,7 +407,28 @@ export default function Scene4_PerspectivePuzzle() {
     { id: 17, position: [5, 0, 22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 18, position: [-22, 0, -5], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
     { id: 19, position: [16, 0, -16], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
-    { id: 20, position: [-16, 0, 16], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false }
+    { id: 20, position: [-16, 0, 16], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    // Additional bones to double the count
+    { id: 21, position: [25, 0, 5], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 22, position: [-25, 0, 5], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 23, position: [5, 0, 25], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 24, position: [-5, 0, -25], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 25, position: [22, 0, -8], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 26, position: [-22, 0, 8], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 27, position: [8, 0, -22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 28, position: [-8, 0, 22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 29, position: [28, 0, 0], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 30, position: [-28, 0, 0], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 31, position: [0, 0, 28], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 32, position: [0, 0, -28], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 33, position: [18, 0, -18], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 34, position: [-18, 0, 18], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 35, position: [12, 0, 22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 36, position: [-12, 0, -22], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 37, position: [22, 0, 12], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 38, position: [-22, 0, -12], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 39, position: [15, 0, -25], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false },
+    { id: 40, position: [-15, 0, 25], rotation: [0, Math.random() * Math.PI * 2, 0], scale: 0.01, collectProgress: 0, collected: false }
   ]);
   
   // State for teleportation target
@@ -594,7 +614,7 @@ export default function Scene4_PerspectivePuzzle() {
           color: timeRemaining <= 10 ? '#ff3333' : 'white',
           padding: '10px 20px',
           borderRadius: '5px',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'DeterminationMono, monospace',
           fontSize: '24px',
           fontWeight: 'bold',
           textAlign: 'center',
@@ -616,7 +636,7 @@ export default function Scene4_PerspectivePuzzle() {
           color: 'white',
           padding: '20px 30px',
           borderRadius: '5px',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'DeterminationMono, monospace',
           textAlign: 'center',
           boxShadow: '0 0 20px rgba(153, 102, 255, 0.7)',
           animation: 'pulse 1.5s infinite',
@@ -644,7 +664,8 @@ export default function Scene4_PerspectivePuzzle() {
               display: 'block',
               boxShadow: '0 0 15px rgba(153, 102, 255, 0.5)',
               cursor: 'pointer',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              fontFamily: 'DeterminationMono, monospace'
             }}
             onMouseOver={(e) => {
               e.currentTarget.style.transform = 'scale(1.05)';
@@ -688,7 +709,7 @@ export default function Scene4_PerspectivePuzzle() {
           color: 'white',
           padding: '20px',
           borderRadius: '10px',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'DeterminationMono, monospace',
           textAlign: 'center',
           width: '300px'
         }}>
@@ -704,7 +725,8 @@ export default function Scene4_PerspectivePuzzle() {
               borderRadius: '5px',
               fontSize: '18px',
               cursor: 'pointer',
-              marginTop: '10px'
+              marginTop: '10px',
+              fontFamily: 'DeterminationMono, monospace'
             }}
           >
             Start Game
@@ -723,7 +745,7 @@ export default function Scene4_PerspectivePuzzle() {
           color: 'white',
           padding: '20px',
           borderRadius: '10px',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'DeterminationMono, monospace',
           textAlign: 'center',
           width: '350px'
         }}>
@@ -761,7 +783,8 @@ export default function Scene4_PerspectivePuzzle() {
               borderRadius: '5px',
               fontSize: '18px',
               cursor: 'pointer',
-              marginTop: '10px'
+              marginTop: '10px',
+              fontFamily: 'DeterminationMono, monospace'
             }}
           >
             Continue to alveolar harbor
@@ -778,7 +801,7 @@ export default function Scene4_PerspectivePuzzle() {
         color: 'white',
         padding: '10px',
         borderRadius: '5px',
-        fontFamily: 'Arial, sans-serif'
+        fontFamily: 'DeterminationMono, monospace'
       }}>
         <h3 style={{ margin: '0 0 10px 0' }}>Collected: {inventory.length}/{bones.length}</h3>
         {inventory.length > 0 ? 
@@ -816,7 +839,7 @@ export default function Scene4_PerspectivePuzzle() {
           padding: '8px 15px',
           borderRadius: '5px',
           cursor: 'pointer',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'DeterminationMono, monospace',
           fontWeight: 'bold',
           boxShadow: '0 2px 5px rgba(0,0,0,0.3)'
         }}
@@ -837,7 +860,7 @@ export default function Scene4_PerspectivePuzzle() {
           padding: '8px 15px',
           borderRadius: '5px',
           cursor: 'pointer',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'DeterminationMono, monospace',
           fontWeight: 'bold',
           boxShadow: '0 2px 5px rgba(0,0,0,0.3)',
           display: 'flex',
@@ -967,7 +990,7 @@ function Scene({ bones, setBones, characterPosition, setCharacterPosition, inven
   useEffect(() => {
     console.log("Setting up proximity detection");
     const proximityThreshold = 2; // Distance threshold for collection
-    const collectStep = 0.04; // Collection speed - increased from 0.01 to 0.04 for faster collection
+    const collectStep = 0.5; // Collection speed - increased from 0.04 to 0.5 for near-instant collection
     const portalThreshold = 7; // Distance threshold for portal activation - adjusted to 7 units
     
     // Check for portal proximity and bone collection
